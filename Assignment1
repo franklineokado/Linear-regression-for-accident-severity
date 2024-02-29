@@ -1,0 +1,40 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+from joblib import dump
+
+# Load dataset
+data = pd.read_csv('accident_data.csv')
+
+# Assume data preprocessing steps here (handling missing values, encoding categorical variables, scaling)
+
+# Define dependent variable (Y) and independent variables (X)
+X = data[['weather_condition', 'road_type', 'vehicle_type', 'speed_limit']]
+Y = data['accident_severity']
+
+# Split data into training and testing sets
+X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=0.2, random_state=42)
+
+# Train the linear regression model
+model = LinearRegression()
+model.fit(X_train, Y_train)
+
+# Evaluate the model
+Y_pred = model.predict(X_test)
+mse = mean_squared_error(Y_test, Y_pred)
+print("Mean Squared Error:", mse)
+
+# Save the model for future use
+dump(model, 'accident_severity_model.joblib')
+
+# Example prediction
+example_data = pd.DataFrame({
+    'weather_condition': ['Sunny'],
+    'road_type': ['Highway'],
+    'vehicle_type': ['Car'],
+    'speed_limit': [60]
+})
+
+severity_prediction = model.predict(example_data)
+print("Predicted accident severity:", severity_prediction)
